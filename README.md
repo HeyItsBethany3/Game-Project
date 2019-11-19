@@ -1,1 +1,1 @@
-Game
+Repository for game project
