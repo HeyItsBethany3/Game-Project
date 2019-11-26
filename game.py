@@ -1,141 +1,145 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Creates initial tree with branches 
+Creates initial tree with branches. Snowman can be placed on left or right of 
+tree. Game stops if snowman hits branches.
 """
 import pygame
 import os
 
-# global variables
-width = 1400
-height = 700
+# Define screen variables
+sWidth = 1400 # screen width
+sHeight = 700 # screen height
+
+# Define tree variables
 TreeWidth = 60
-TreeStartWidth = (width-TreeWidth)//2
-direction = 10
-branchWidth = TreeWidth*3
-branchHeight = height//40
-snowmanDist = 20   #Distance from tree
-snowmanY = 7*height//8   # Position from top of centre of snowman  
+TreeStartWidth = (sWidth-TreeWidth)//2 # left coordinate where tree starts
+
+# Define branch variables
+branchWidth = TreeWidth*3 
+branchHeight = sHeight//40 
+
+# Define snoman variables
+snowmanDist = 20   # Distance from tree
+snowmanY = 7*sHeight//8   # Distance from screen top to centre of snowman  
 rad = 10  # Snowman radius 
 
 class Branches:
     
-    def __init__(self,x,changeX, pos):
-        self.x = x #height from top 
-        self.changeX = changeX
-        self.pos = pos # left or right
+    changeY = 5 # How quickly branch moves down vertically
+    
+    def __init__(self,y, pos):
+        self.y = y # height from top of screen
+        self.pos = pos # left or right of tree
 
-    def show(self,colour):
+    def paint(self,colour):
         global screen
+        # If branch has position left, draw to left of tree
         if self.pos == "left":
             pygame.draw.rect(screen, colour, \
-                             pygame.Rect(TreeStartWidth-branchWidth,self.x,branchWidth,branchHeight))
-        elif self.pos == "right":
-            pygame.draw.rect(screen, colour, \
-                             pygame.Rect(TreeStartWidth+TreeWidth,self.x,branchWidth,branchHeight))
+                             pygame.Rect(TreeStartWidth-branchWidth,self.y,branchWidth,branchHeight))
+            
+        # If branch has position right, draw to right of tree
         else:
-            pass # Error has occurred
+            pygame.draw.rect(screen, colour, \
+                             pygame.Rect(TreeStartWidth+TreeWidth,self.y,branchWidth,branchHeight))
             
             
-    def update(self, snowmanPos):
-        global bgColor,fgColor
+    def move(self, snowmanPos):
+        global bgColour,treeColour
         
-        self.show(bgColor)
-        newX = self.x + self.changeX 
+        # Hide current branch
+        self.paint(bgColour)
+        newY = self.y + self.changeY
+        # lower bound for branch y value
+        lowerBound = newY + branchHeight
         
-        if newX < snowmanY+rad and newX > snowmanY-rad: # Branch is in snowmans space
-            if snowmanPos == self.pos:
-                # display game over
-                while True:
+        if lowerBound < snowmanY+rad and lowerBound > snowmanY-rad and \
+        snowmanPos == self.pos: 
+            # New branch would be in snowmans space
+            # Display game over
+            while True:
+                    # Infinite loop until we close screen
                     e = pygame.event.poll()
                     if e.type == pygame.QUIT:
                         break
-                pygame.quit()  
-                os._exit(0)
-                    
-            
-        elif newX + branchHeight >= height:
-            self.x = 0
+            pygame.quit()  
+            os._exit(0)
+        
+                      
+        elif (lowerBound > sHeight):
+            # Branch starts at top of screen again
+            self.y = 0 
+            self.paint(treeColour)
         else:
-            self.x += self.changeX
-            self.show(fgColor)
+            # Branch moves down visually 
+            self.y += self.changeY
+            self.paint(treeColour)
             
         
-
 class Snowman:
     
-
-    #  snowman is either left or right - always has same y coordinates
+    # Snowman position is left or right of tree (always has same y coordinate)
     def __init__(self, pos):
-        self.pos = pos
+        self.pos = pos # left or right 
     
-    def show(self,colour):
+    def paint(self,colour):
+        # Draws snowman on correct side of tree
         global screen
         if self.pos == "left":
-            pygame.draw.circle(screen,colour, (TreeStartWidth-snowmanDist,snowmanY),rad)
-        elif self.pos == "right":
-            pygame.draw.circle(screen,colour, (TreeStartWidth+snowmanDist+TreeWidth,snowmanY),rad)
+            pygame.draw.circle(screen,colour,(TreeStartWidth-snowmanDist,snowmanY),rad)
         else:
-            pass
-        
+            pygame.draw.circle(screen,colour,(TreeStartWidth+snowmanDist+TreeWidth,snowmanY),rad)
         
 
-# we start drawing our scenario:
+# Main code
 
+# Initialise pygame and draw screen
 pygame.init()
+screen = pygame.display.set_mode((sWidth, sHeight))
 
-screen = pygame.display.set_mode((width, height))
+# Specify colours
+bgColour = pygame.Color("white")
+treeColour = pygame.Color("green")
+snowmanColour = pygame.Color("red")
 
-bgColor = pygame.Color("white")
-fgColor = pygame.Color("green")
-snowmanColor = pygame.Color("red")
+# Colour the background
+screen.fill(bgColour)
 
-# filling the background
-screen.fill(bgColor)
+# Draw the tree
+pygame.draw.rect(screen, treeColour, pygame.Rect(TreeStartWidth,0,TreeWidth,sHeight))
 
-# draw the tree
-pygame.draw.rect(screen, fgColor, pygame.Rect(TreeStartWidth,0,TreeWidth,height))
+# Draw braches
+fromTop = 20 # Distance initially from top of screen
+branch1 = Branches(fromTop, "left")
+branch1.paint(treeColour)
 
-# draw braches
-fromTop = 20
-branch1 = Branches(fromTop, 10, "left")
-branch1.show(fgColor)
+branch2 = Branches(fromTop+200, "right")
+branch2.paint(treeColour)
 
-branch2 = Branches(fromTop+200, 10, "right")
-branch2.show(fgColor)
+branch3 = Branches(fromTop+400, "left")
+branch3.paint(treeColour)
 
-branch3 = Branches(fromTop+400, 10, "left")
-branch3.show(fgColor)
-
-# draw snowman
+# Draw snowman
 snowman = Snowman("right")
-#snowman.show(snowmanColor)
+snowman.paint(snowmanColour)
 
 while True:
+    
     e = pygame.event.poll()
     if e.type == pygame.QUIT:
+        # Can close game at any time
         break
 
-    # visualise the changes you just made
+    # Shows any changes made
     pygame.display.flip()
     
-    # update branches
+    # Move branches  
+    branch1.move(snowman.pos)
+    branch2.move(snowman.pos)
+    branch3.move(snowman.pos)
     
-    branch1.update(snowman.pos)
-    branch2.update(snowman.pos)
-    branch3.update(snowman.pos)
-    
-    #inputKey = pygame.key.get_mods()
-    #rightKey = pygame.key.name(pygame.K_RIGHT)
-    #if pygame.key.get_focused():
-        #if pygame.key.name() == "K_LEFT" and snowman.pos=="right":
-         #   snowman = Snowman("left")
-         #   snowman.show(snowmanColor)
-        
-       # if pygame.key.name() == "K_RIGHT" and snowman.pos=="left":
-         #   snowman = Snowman("right")
-          #  snowman.show(snowmanColor)
 
 
-pygame.quit()  # for the rest of you.
-os._exit(0)  # just for MacOs users
+pygame.quit()  # Stops program
+os._exit(0)  # Stops program for mac OS users
