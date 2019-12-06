@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Creates initial tree with branches. Snowman can be placed on left or right of 
-tree. Game stops if snowman hits branches. Click to start the game.
+Snowman can move left or right. Press enter to start the game.
+Get points and health by collecting snowflakes. Health runs out over time. 
+Snowman dies if it hits the branches or melts (does not have enough health)
 """
 from PPlay.window import Window
 from PPlay.gameimage import GameImage
+from scorer import Scorer
+from highscoremanager import ScoreManager
 
 import pygame
 import os
@@ -17,12 +20,17 @@ menu_bg = GameImage('sprite/scenario/start.png')
 start_button = GameImage('sprite/scenario/button.png')
 game_over = GameImage('sprite/scenario/GAMEOVER.png')
 
+
 # Define screen variables
 sWidth = 512 # screen width
 sHeight = 512 # screen height
 
 window = Window(sWidth, sHeight)
 window.set_title('SnowMan')
+
+score_manager = ScoreManager() # Stores high score
+scorer = Scorer(window) # Calculates score
+record_checked = False
 
 # Define tree variables
 TreeWidth = 60
@@ -37,8 +45,7 @@ snowmanDist = 140   # Distance from tree
 snowmanY = 2*sHeight//3 + 36  # Distance from screen top to top of snowman  
 radFlake = 10 # Snowflake radius 
 
-# Keep score
-points = 0
+
  
 
 class Branches:
@@ -72,7 +79,7 @@ class Branches:
         # Change position
         self.texture.set_position(x, y)
 
-    def paint(self,colour):
+    def paint(self):
         
         self.texture.set_position(0, self.y)
         # If branch has position left, draw to left of tree
@@ -94,11 +101,11 @@ class Branches:
         elif (lowerBound > sHeight):
             # Branch starts at top of screen again
             self.y = -50  # change to 64?
-            self.paint(treeColour)
+            self.paint()
         else:
             # Branch moves down visually 
             self.y += self.changeY 
-            self.paint(treeColour)
+            self.paint()
             
         
 class Snowman:
@@ -111,7 +118,7 @@ class Snowman:
     def __init__(self, pos):
         self.pos = pos # left or right 
     
-    def paint(self,colour):
+    def paint(self):
         # Draws snowman on correct side of tree
         global screen
         if self.pos == "left":
@@ -150,7 +157,7 @@ class Snowflake:
         
         if lowerBound > snowmanY  and snowmanPos == self.pos: 
             # New flake be in snowmans space
-            points += 1                
+            scorer.snowflake_calc() # gain points and health by catching snowflakes           
             self.y = 0
             self.paint(flakeColour)
                       
@@ -214,14 +221,14 @@ for i in range(sHeight*2):
 def paintEverything():
     background.draw()
 
-    snowman.paint(snowmanColour)
+    snowman.paint()
     
     for item in tree:
-        item.paint(treeColour)
+        item.paint()
         
-    branch1.paint(treeColour)
-    branch2.paint(treeColour)
-    branch3.paint(treeColour)
+    branch1.paint()
+    branch2.paint()
+    branch3.paint()
     
     
     flake1.paint(flakeColour)
@@ -274,22 +281,14 @@ while True:
         # Game in progress
         
         if pygame.key.get_pressed()[pygame.K_LEFT]:
-            snowman.paint(bgColour)
             snowman.pos = "left"
-            snowman.paint(snowmanColour)
         
         elif pygame.key.get_pressed()[pygame.K_RIGHT]:
-                snowman.paint(bgColour)
                 snowman.pos = "right"
-                snowman.paint(snowmanColour)
-
-        # Shows any changes made
-        pygame.display.flip()
-    
+            
         # Update background
         paintEverything()
-        
-        
+    
         
         # Branches and snowflakes move faster over time
         if counter%1000 == 0:
@@ -300,12 +299,25 @@ while True:
         # Move branches and snowflakes
         moveEverything()
         
-       
+        if counter%10 == 0:
+            # Lose health but gain points over time
+            scorer.add_points()
+            scorer.update() 
+            
+        scorer.draw()
+        
+        if not scorer.snowie_alive():
+            game_state = 0 # Game over
+            
+        # Shows any changes made
+        pygame.display.flip()
+        
         
     elif game_state == 2:
         background.draw()
         menu_bg.draw()
         start_button.draw()
+        window.draw_text(str(score_manager.get_records()), 512 - 56, 274, color=(20, 200, 50), font_file='font.TTF', size=30)
         pygame.display.flip()
        
         
@@ -317,11 +329,27 @@ while True:
             
             # Initial graphics
             paintEverything()
+            scorer.draw()
             
     elif game_state == 0:
         # Game over
+        
+        # Calculate high score
+        if not record_checked:
+            if scorer.get_points() > score_manager.get_records():
+                score_manager.set_new_record(scorer.get_points())
+            record_checked = True
+            
         background.draw()
         game_over.draw()
+        
+        # Show high scores on game over screen
+        window.draw_text(str(score_manager.get_records()), 260, 205, color=(20, 200, 50), font_file='font.TTF',
+                         size=30)#highest records
+        window.draw_text(str(scorer.get_points()), 260, 240, color=(20, 200, 50), font_file='font.TTF',
+                         size=30)#last score
+        
+        
         
         if pygame.key.get_pressed()[pygame.K_RETURN]:
             #start game again
@@ -345,9 +373,13 @@ while True:
             
             paintEverything()
             
+            scorer = Scorer(window)
+            record_checked = False
+            scorer.draw()
         
         pygame.display.flip()
         
+       
     
 
 pygame.quit()  # Stops program
