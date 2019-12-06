@@ -15,10 +15,10 @@ import os
 game_state = 2  # in menu
 
 # Set display
-background = GameImage('sprite/scenario/scenarionew.gif')
-menu_bg = GameImage('sprite/scenario/start.png')
-start_button = GameImage('sprite/scenario/button.png')
-game_over = GameImage('sprite/scenario/GAMEOVER.png')
+background = GameImage('sprite/scenario/scenarionew.png')
+menu_bg = GameImage('sprite/scenario/start1.png')
+start_button = GameImage('sprite/scenario/button1.png')
+game_over = GameImage('sprite/scenario/GameOver1.png')
 
 
 # Define screen variables
@@ -52,9 +52,9 @@ class Branches:
     
     changeY = 4 # How quickly branch moves down vertically
     
-    tree_types = ('sprite/branches/right1.png',
+    tree_types = ('sprite/branches/right.png',
                        'sprite/branches/left.png',
-                       'sprite/branches/00.png')
+                       'sprite/branches/middle.png')
 
     
     def __init__(self,y, pos):
@@ -205,8 +205,8 @@ flake5 = Snowflake(120, "right")
 flake6 = Snowflake(20, "right")
 
 # Make default tree
-treeHeight = GameImage('sprite/branches/00.png').get_height()
-treeWidth = GameImage('sprite/branches/00.png').get_width()
+treeHeight = GameImage('sprite/branches/middle.png').get_height()
+treeWidth = GameImage('sprite/branches/middle.png').get_width()
 # treeWidth is 512, treeHeight is 64
 
 # Create tree (default background)
