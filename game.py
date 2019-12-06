@@ -18,7 +18,6 @@ game_state = 2  # in menu
 # Set display
 background = GameImage('sprite/scenario/scenarionew.png')
 menu_bg = GameImage('sprite/scenario/start1.png')
-start_button = GameImage('sprite/scenario/button1.png')
 game_over = GameImage('sprite/scenario/GameOver1.png')
 
 
@@ -38,14 +37,14 @@ TreeWidth = 60
 TreeStartWidth = (sWidth-TreeWidth)//2 # left coordinate where tree starts
 
 # Define branch variables
-branchHeight = sHeight//40
+branchHeight = 64
 
 # Define snowman variables
 snowmanDist = 140   # Distance from tree
 snowmanY = 2*sHeight//3 + 36  # Distance from screen top to top of snowman
 radFlake = 10 # Snowflake radius
 
-
+flakeHeight = 150
 
 
 class Branches:
@@ -68,12 +67,7 @@ class Branches:
             self.type = 2
 
         self.texture = GameImage(self.tree_types[self.type])
-        if pos == "left":
-            self.texture.set_position(0, self.y)
-        elif pos == "right":
-            self.texture.set_position(0, self.y)
-        else:
-            self.texture.set_position(0, self.y)
+        self.texture.set_position(0, self.y)
 
     def set_position(self, x, y):
         # Change position
@@ -84,7 +78,7 @@ class Branches:
         self.texture.draw()
 
     def move(self, snowmanPos):
-        global bgColour,treeColour, game_state
+        global game_state
 
 
         newY = self.y + self.changeY
@@ -96,7 +90,7 @@ class Branches:
             game_state = 0 #game over
 
 
-        elif (lowerBound > sHeight):
+        elif (newY > sHeight):
             # Branch starts at top of screen again
             self.y = -50  # change to 64?
             self.paint()
@@ -108,8 +102,9 @@ class Branches:
 
 
 class Snowman:
-    sprites = (GameImage('sprite/snowman/1.png', 0, snowmanY),
-                        GameImage('sprite/snowman/4.png', 0, snowmanY))
+    #CHANGE THIS
+    sprites = (GameImage('sprite/snowman/old1.png', 0, snowmanY),
+                        GameImage('sprite/snowman/old2.png', 0, snowmanY))
 
     height = sprites[0].get_height()
 
@@ -129,41 +124,58 @@ class Snowman:
 
 class Snowflake:
 
+    flakeImage = ('sprite/scenario/flakeL.png', 'sprite/scenario/flakeR.png')
+    
+                        
     changeY = 4
 
     def __init__(self, y, pos):
         self.pos = pos # left or right
         self.y = y # y coordinates
-
-    def paint(self,colour):
-        # Draws snowflake on correct side of tree
-        global screen
-        if self.pos == "left":
-            pygame.draw.circle(screen,colour,(TreeStartWidth-snowmanDist,self.y),radFlake)
+        
+        if pos == "left":
+            self.type = 0
         else:
-            pygame.draw.circle(screen,colour,(TreeStartWidth+snowmanDist+TreeWidth,self.y),radFlake)
+            self.type = 1
+
+        self.texture = GameImage(self.flakeImage[self.type])
+        self.set_position()
+        
+    def set_position(self):
+        # Change position
+        if self.pos == "left":
+            self.texture.set_position(50, self.y)
+        else:
+            self.texture.set_position(-50, self.y)
+
+    def paint(self):
+        
+        self.set_position()
+        self.texture.draw()  
+
 
     def move(self, snowmanPos):
-        global bgColour, flakeColour, points
+        
 
         newY = self.y + self.changeY
         # lower bound for branch y value
-        lowerBound = newY + branchHeight
+        lowerBound = newY + branchHeight#flakeHeight
 
         if lowerBound > snowmanY  and snowmanPos == self.pos:
             # New flake be in snowmans space
             scorer.snowflake_calc() # gain points and health by catching snowflakes
-            self.y = 0
-            self.paint(flakeColour)
+            self.y = -50
+            self.paint()
 
         elif (lowerBound > sHeight):
             # snowflake starts at top of screen again
             self.y = 0
-            self.paint(flakeColour)
+            self.paint()
         else:
             # Snowflake moves down
             self.y += self.changeY
-            self.paint(flakeColour)
+            self.paint()
+            
 
 
 def paintEverything():
@@ -177,12 +189,12 @@ def paintEverything():
     for item in branches:
         item.paint()
 
-    flake1.paint(flakeColour)
-    flake2.paint(flakeColour)
-    flake3.paint(flakeColour)
-    flake4.paint(flakeColour)
-    flake5.paint(flakeColour)
-    flake6.paint(flakeColour)
+    flake1.paint()
+    flake2.paint()
+    flake3.paint()
+    flake4.paint()
+    flake5.paint()
+    flake6.paint()
     
     scorer.draw()
 
@@ -278,6 +290,7 @@ flake4 = Snowflake(230, "right")
 flake5 = Snowflake(120, "right")
 flake6 = Snowflake(20, "right")
 
+
 # Make default tree
 treeHeight = GameImage('sprite/branches/middle.png').get_height()
 treeWidth = GameImage('sprite/branches/middle.png').get_width()
@@ -345,7 +358,6 @@ while True:
     elif game_state == 2:
         background.draw()
         menu_bg.draw()
-        start_button.draw()
         window.draw_text(str(score_manager.get_records()), 512 - 56, 274, color=(20, 200, 50), font_file='font.TTF', size=30)
         pygame.display.flip()
 
