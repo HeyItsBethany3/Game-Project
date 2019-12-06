@@ -44,7 +44,7 @@ snowmanDist = 140   # Distance from tree
 snowmanY = 2*sHeight//3 + 36  # Distance from screen top to top of snowman
 radFlake = 10 # Snowflake radius
 
-flakeHeight = 150
+#flakeHeight = 150
 
 
 class Branches:
@@ -126,6 +126,7 @@ class Snowflake:
 
     flakeImage = ('sprite/scenario/flakeL.png', 'sprite/scenario/flakeR.png')
     
+    endOfScreen = False
                         
     changeY = 4
 
@@ -159,18 +160,18 @@ class Snowflake:
 
         newY = self.y + self.changeY
         # lower bound for branch y value
-        lowerBound = newY + branchHeight#flakeHeight
+        lowerBound = newY + branchHeight # not sure why this works but it does
 
         if lowerBound > snowmanY  and snowmanPos == self.pos:
             # New flake be in snowmans space
             scorer.snowflake_calc() # gain points and health by catching snowflakes
-            self.y = -50
-            self.paint()
+            self.endOfScreen = True
+            
 
         elif (lowerBound > sHeight):
             # snowflake starts at top of screen again
-            self.y = 0
-            self.paint()
+            
+            self.endOfScreen = True
         else:
             # Snowflake moves down
             self.y += self.changeY
@@ -188,13 +189,10 @@ def paintEverything():
 
     for item in branches:
         item.paint()
+        
+    for item in flakes:
+        item.paint()
 
-    flake1.paint()
-    flake2.paint()
-    flake3.paint()
-    flake4.paint()
-    flake5.paint()
-    flake6.paint()
     
     scorer.draw()
 
@@ -215,12 +213,11 @@ def moveEverything():
 
 
     # Move snowflakes
-    flake1.move(snowman.pos)
-    flake2.move(snowman.pos)
-    flake3.move(snowman.pos)
-    flake4.move(snowman.pos)
-    flake5.move(snowman.pos)
-    flake6.move(snowman.pos)
+    for index, item in enumerate(flakes):
+        item.move(snowman.pos)
+        if item.endOfScreen:
+            del flakes[index]
+    
     
     scorer.draw()
     pygame.display.flip()
@@ -228,42 +225,60 @@ def moveEverything():
     
     
 def add_branches():
-
-    side = []
-    yValue = []
-    numToAdd = 3
-    for i in range(numToAdd):
-        side.append(randint(0,1))
-
-        if i == 1:
-            yValue.append(randint(-512,0))
+    
+    side = randint(0,1)
+    gap = 200 # freezes if this is too high
+    count = 1
+    while True:
+        newY = randint(-512, 0)
+        okayPosition = True
+        for item in branches:
+            if abs(newY-item.y) < gap:
+                okayPosition = False
+        if okayPosition:
+            yValue = newY
+            break
+        count +=1
+        if count == 20:
+            yValue = False
+            break
+    
+    if len(branches) < 4 and yValue != False:
+        if side == 0: # left branch
+                branches.append(Branches(yValue, "left"))
         else:
-            while True:
-                newY = randint(-512, 0)
-                okayPosition = True
-                # At the moment this code is not doing anything
-                for x in range(i-1):
-                    if abs(newY-yValue[x]) < 200:
-                        okayPosition = False
-                        #print(abs(newY-yValue[x]))
-                """
-                for item in branches:
-                    if abs(newY-item.y) < 200:
-                        okayPosition = False
-                """
+                branches.append(Branches(yValue, "right"))
+        
+ 
 
-                if okayPosition:
-                    yValue.append(newY)
-                    break
-
-
-    if len(branches) < 2:
-        for i in range(numToAdd):
-            if side[i] == 0: # left branch
-                branches.append(Branches(yValue[i], "left"))
-            else:
-                branches.append(Branches(yValue[i], "right"))
-
+def add_flakes():
+    
+    side = randint(0,1)
+    gap = 100
+    count = 1
+    while True:
+        newY = randint(-512, 0)
+        okayPosition = True
+        for item in branches:
+            if abs(newY-item.y) < gap:
+                okayPosition = False
+        for item in flakes:
+            if abs(newY-item.y) < gap:
+                okayPosition = False
+        if okayPosition:
+            yValue = newY
+            break
+        count += 1
+        if count == 20:
+            yValue = False
+            break
+            
+    if len(flakes) < 4 and yValue != False:
+        if side == 0: # left branch
+                flakes.append(Snowflake(yValue, "left"))
+        else:
+                flakes.append(Snowflake(yValue, "right"))
+    
 
 # Main code
 
@@ -283,12 +298,9 @@ branches.append(Branches(250, "right"))
 
 
 # Create snowflakes
-flake1 = Snowflake(50, "left")
-flake2 = Snowflake(250, "left")
-flake3 = Snowflake(400, "right")
-flake4 = Snowflake(230, "right")
-flake5 = Snowflake(120, "right")
-flake6 = Snowflake(20, "right")
+flakes = []
+flakes.append(Snowflake(50, "right"))
+flakes.append(Snowflake(340, "left"))
 
 
 # Make default tree
@@ -327,8 +339,9 @@ while True:
         elif pygame.key.get_pressed()[pygame.K_RIGHT]:
                 snowman.pos = "right"
                 
-        # Add branches if necessary
+        # Add branches and snowflakes if necessary
         add_branches()
+        add_flakes()
 
         # Update background
         paintEverything()
@@ -405,12 +418,9 @@ while True:
             branches.append(Branches(250, "right"))
 
             # Create snowflakes
-            flake1 = Snowflake(50, "left")
-            flake2 = Snowflake(250, "left")
-            flake3 = Snowflake(400, "right")
-            flake4 = Snowflake(230, "right")
-            flake5 = Snowflake(120, "right")
-            flake6 = Snowflake(20, "right")
+            flakes = []
+            flakes.append(Snowflake(50, "right"))
+            flakes.append(Snowflake(340, "left"))
 
             paintEverything()
 
