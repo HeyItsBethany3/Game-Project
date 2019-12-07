@@ -19,6 +19,7 @@ game_state = 2  # in menu
 background = GameImage('sprite/scenario/scenarionew.png')
 menu_bg = GameImage('sprite/scenario/newbkg.png')
 game_over = GameImage('sprite/scenario/GameOver1.png')
+button = GameImage('sprite/scenario/button1.png', 0, -140)
 
 
 # Define screen variables
@@ -49,7 +50,8 @@ radFlake = 10 # Snowflake radius
 
 class Branches:
 
-    changeY = 10 # How quickly branch moves down vertically
+    changeY = 6 # How quickly branch moves down vertically
+    direction = "up"
 
     tree_types = ('sprite/branches/right.png',
                   'sprite/branches/left.png',
@@ -87,7 +89,6 @@ class Branches:
         lowerBound = newY + branchHeight
         upperBound = newY - branchHeight
         
-        print( lowerBound )
     
         if  upperBound < snowmanY < lowerBound  and snowmanPos == self.pos:
             # New branch would be in snowmans space
@@ -107,22 +108,24 @@ class Branches:
 
 
 class Snowman:
-    #CHANGE THIS
-    sprites =          (GameImage('sprite/snowman/snowmanLeft.png',  0, snowmanY),
-                        GameImage('sprite/snowman/snowmanRight.png', 0, snowmanY),
-                        GameImage('sprite/snowman/meltyLeft.png',    0, snowmanY),
-                        GameImage('sprite/snowman/meltyRight.png',   0, snowmanY))
+    
+    sprites = (GameImage('sprite/snowman/snowmanLeft.png',  45, snowmanY),
+               GameImage('sprite/snowman/snowmanRight.png', -45, snowmanY),
+               GameImage('sprite/snowman/meltyLeft.png',    45, snowmanY),
+               GameImage('sprite/snowman/meltyRight.png',   -45, snowmanY))
 
-    height = sprites[0].get_height()
+    
 
     # Snowman position is left or right of tree (always has same y coordinate)
     def __init__(self, pos):
         self.pos = pos # left or right
+    
 
     def paint(self):
         # Draws snowman on correct side of tree
         
         if self.pos == "left":
+            self.type = self.sprites[0]
             self.sprites[0].draw()
 
         else:
@@ -134,8 +137,8 @@ class Snowflake:
     flakeImage = ('sprite/scenario/flakeL.png', 'sprite/scenario/flakeR.png')
     
     endOfScreen = False
-                        
-    changeY = 10
+    
+    changeY = 6
 
     def __init__(self, y, pos):
         self.pos = pos # left or right
@@ -300,8 +303,8 @@ snowman = Snowman("right")
 
 # Create initial branches
 branches = []
-branches.append(Branches(20, "left"))
-branches.append(Branches(250, "right"))
+
+
 
 
 # Create snowflakes
@@ -355,34 +358,54 @@ while True:
 
 
         # Branches and snowflakes move faster over time
-        if counter%1000 == 0:
-            Branches.changeY += 2
-            Snowflake.changeY += 2
-        counter += 1
-
+        startSpeed = 6
+        maxSpeed = 10
+        if counter%300 == 0: # change to 400
+            if Branches.changeY == maxSpeed:
+                Branches.diretion = "down"
+            elif Branches.changeY == startSpeed:
+                Branches.direction = "up"
+            
+            if Branches.direction == "up":
+                # game speeds up
+                Branches.changeY += 1
+                Snowflake.changeY += 1
+            else:
+                # game slows down
+                Branches.changeY -= 1
+                Snowflake.changeY -= 1
+            
         # Move branches and snowflakes
         moveEverything()
 
-        if counter%10 == 0:
-            # Lose health but gain points over time
+        if counter%50 == 0:
+            # Gain points over time
             scorer.add_points()
+        if counter % 10 == 0:
+            # Lose health over time
             scorer.update(counter)
 
         if not scorer.snowie_alive():
             game_state = 0 # Game over
+        
+        counter += 1
 
         # Shows any changes made
         pygame.display.flip()
 
 
     elif game_state == 2:
+        # Menu screen
         background.draw()
-        menu_bg.draw()
-        window.draw_text(str(score_manager.get_records()), 512 - 260, 320, color=(255,255,255), font_file='font.TTF', size=20)
+        if counter < 250:
+            menu_bg.draw()
+            window.draw_text(str(score_manager.get_records()), 512 - 260, 320, color=(255,255,255), font_file='font.TTF', size=20)
+        else:
+            button.draw()
         pygame.display.flip()
 
-
-
+        
+        counter += 1
         if pygame.key.get_pressed()[pygame.K_RETURN]:
             # Enter to start game
             game_state = 1
@@ -390,7 +413,7 @@ while True:
 
             # Initial graphics
             paintEverything()
-            
+        
 
     elif game_state == 0:
         # Game over
@@ -427,13 +450,16 @@ while True:
             snowman = Snowman("right")
 
             branches = []
-            branches.append(Branches(20, "left"))
-            branches.append(Branches(250, "right"))
 
             # Create snowflakes
             flakes = []
-            flakes.append(Snowflake(50, "right"))
-            flakes.append(Snowflake(340, "left"))
+            
+            # Reset speed 
+            Branches.changeY = 6 # 6
+            Snowflake.changeY = 6
+            Branches.direction = "up"
+            
+            
 
             paintEverything()
 
