@@ -17,7 +17,7 @@ game_state = 2  # in menu
 
 # Set display
 background = GameImage('sprite/scenario/scenarionew.png')
-menu_bg = GameImage('sprite/scenario/start1.png')
+menu_bg = GameImage('sprite/scenario/newbkg.png')
 game_over = GameImage('sprite/scenario/GameOver1.png')
 
 
@@ -52,8 +52,8 @@ class Branches:
     changeY = 4 # How quickly branch moves down vertically
 
     tree_types = ('sprite/branches/right.png',
-                       'sprite/branches/left.png',
-                       'sprite/branches/middle.png')
+                  'sprite/branches/left.png',
+                  'sprite/branches/middle.png')
     endOfScreen = False
 
     def __init__(self,y, pos):
@@ -81,14 +81,18 @@ class Branches:
         global game_state
 
 
-        newY = self.y + self.changeY
+        newY = self.y 
+        
         # lower bound for branch y value
         lowerBound = newY + branchHeight
-
+        
+        
+        print( snowmanY )
         if lowerBound > snowmanY and snowmanPos == self.pos:
             # New branch would be in snowmans space
             game_state = 0 #game over
 
+            
 
         elif (newY > sHeight):
             # Branch starts at top of screen again
@@ -103,8 +107,10 @@ class Branches:
 
 class Snowman:
     #CHANGE THIS
-    sprites = (GameImage('sprite/snowman/old1.png', 0, snowmanY),
-                        GameImage('sprite/snowman/old2.png', 0, snowmanY))
+    sprites =          (GameImage('sprite/snowman/snowmanLeft.png',  0, snowmanY),
+                        GameImage('sprite/snowman/snowmanRight.png', 0, snowmanY),
+                        GameImage('sprite/snowman/meltyLeft.png',    0, snowmanY),
+                        GameImage('sprite/snowman/meltyRight.png',   0, snowmanY))
 
     height = sprites[0].get_height()
 
@@ -359,7 +365,7 @@ while True:
         if counter%10 == 0:
             # Lose health but gain points over time
             scorer.add_points()
-            scorer.update()
+            scorer.update(counter)
 
         if not scorer.snowie_alive():
             game_state = 0 # Game over
@@ -371,7 +377,7 @@ while True:
     elif game_state == 2:
         background.draw()
         menu_bg.draw()
-        window.draw_text(str(score_manager.get_records()), 512 - 56, 274, color=(20, 200, 50), font_file='font.TTF', size=30)
+        window.draw_text(str(score_manager.get_records()), 512 - 260, 320, color=(255,255,255), font_file='font.TTF', size=20)
         pygame.display.flip()
 
 
@@ -396,6 +402,12 @@ while True:
 
         background.draw()
         game_over.draw()
+
+        if snowman.pos== "left":
+                Snowman.sprites[2].draw()
+
+        else:
+                Snowman.sprites[3].draw()
 
         # Show high scores on game over screen
         window.draw_text(str(score_manager.get_records()), 260, 205, color=(20, 200, 50), font_file='font.TTF',

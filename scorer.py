@@ -22,8 +22,9 @@ class Scorer:
         if self.health > 100:
             self.health = 100
 
-    def update(self):
-        self.health -= self.life_loss_rate * self.window.delta_time()
+    def update(self, x):
+        self.x = x
+        self.health -= self.life_loss_rate * x/360
 
     def snowie_alive(self):
         return self.health > 0 # confused  - returns boolean? True if health positive?
