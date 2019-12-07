@@ -49,7 +49,7 @@ radFlake = 10 # Snowflake radius
 
 class Branches:
 
-    changeY = 4 # How quickly branch moves down vertically
+    changeY = 10 # How quickly branch moves down vertically
 
     tree_types = ('sprite/branches/right.png',
                   'sprite/branches/left.png',
@@ -81,16 +81,17 @@ class Branches:
         global game_state
 
 
-        newY = self.y 
+        newY = self.y + self.changeY
         
         # lower bound for branch y value
         lowerBound = newY + branchHeight
+        upperBound = newY - branchHeight
         
-        
-        print( snowmanY )
-        if lowerBound > snowmanY and snowmanPos == self.pos:
+        print( lowerBound )
+    
+        if  upperBound < snowmanY < lowerBound  and snowmanPos == self.pos:
             # New branch would be in snowmans space
-            game_state = 0 #game over
+                game_state = 0 #game over
 
             
 
@@ -134,7 +135,7 @@ class Snowflake:
     
     endOfScreen = False
                         
-    changeY = 4
+    changeY = 10
 
     def __init__(self, y, pos):
         self.pos = pos # left or right
@@ -163,12 +164,12 @@ class Snowflake:
 
     def move(self, snowmanPos):
         
-
+        
         newY = self.y + self.changeY
         # lower bound for branch y value
         lowerBound = newY + branchHeight # not sure why this works but it does
-
-        if lowerBound > snowmanY  and snowmanPos == self.pos:
+        upperBound = newY - branchHeight
+        if upperBound < snowmanY < lowerBound  and snowmanPos == self.pos:
             # New flake be in snowmans space
             scorer.snowflake_calc() # gain points and health by catching snowflakes
             self.endOfScreen = True
