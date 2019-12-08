@@ -345,7 +345,7 @@ flakes.append(Snowflake(340, "left"))
 # Create tree (default background)
 tree = []
 for i in range(sHeight*2):
-    if (i+1)%treeHeight==0:
+    if (i+1)%(treeHeight-10)==0:
         tree.append(Branches(i+1-(2*treeHeight), "middle"))
 
 
