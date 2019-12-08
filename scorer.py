@@ -6,32 +6,36 @@ class Scorer:
         
     def __init__(self, window):
         self.window = window
-        self.health = 100
-        self.points = 0
-        self.life_loss_rate = 2
-
+        self.health = 100 # health
+        self.points = 0 # points
+        self.life_loss_rate = 2 # rate at which health falls
+        
+    # Increases points
     def add_points(self):
         self.points += 1
 
-
+    # When a snowflake is collected, points and health increase
     def snowflake_calc(self):
         self.points += 3
-        self.health += 5
+        self.health += 8 # 5
         self.life_loss_rate += 0.5 ** self.life_loss_rate 
         
+        # Health cannot be greater than 100
         if self.health > 100:
             self.health = 100
-
+    
+    # Health decreases (and at a faster rate) over time
     def update(self):
         self.health -= self.life_loss_rate * self.window.delta_time()
-
+    
+    # Snowie dies if health is zero
     def snowie_alive(self):
         return self.health > 0 
 
     def get_points(self):
         return self.points
 
-    # shows health bar
+    # Shows health bar and number of points
     def draw(self):
         pygame.draw.rect(self.window.get_screen(), (105, 105, 105), (512 / 2 - 66, 8, 132, 34), 0)  # 2px gray border
         pygame.draw.rect(self.window.get_screen(), (255, 0, 0), (512 / 2 - 64, 10, 128, 30), 0)  # Red bar
