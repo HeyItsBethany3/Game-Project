@@ -1,10 +1,12 @@
 Repository for game project
 
-- Press Enter to Start or replay
-- Snowman moves right to lift using keyboard left, right arrows
-- health decreases rapidly by time 
-- you get points by time spent playing and collecting flakes
-- game is ends if the snowman hit a branch or melts when health bar goes red
+- Press Enter to Start or Replay
+- Snowman moves right or left using keyboard left and right arrows
+- Health decreases rapidly by time
+- You get points by time spent playing and collecting flakes
+- You also gain health by collecting flakes
+- Game ends if the snowman hits a branch or if the snowman melts (loses too much health - health bar goes red)
+- Game speeds up and slows down over time
 - we edited and reused some codes from this github repository https://github.com/fernandocostar/timberBAM/tree/master/TimberBAM/TimberBAM
 
 ENJOY THE GAME :D
