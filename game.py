@@ -49,7 +49,7 @@ snowmanH = 64 # Height of snowman
 
 # Speed of branches and snowflakes
 startSpeed = 6
-maxSpeed = 10
+maxSpeed = 12
 
 # Plays background music
 pygame.mixer.music.load('sound_effects/music.mp3')
@@ -251,16 +251,21 @@ def add_branches():
     
     side = randint(0,1) # Generates random side of tree (left or right)
     gap = 200 # Minimum gap between branches
-    desiredNumOfBranches = 4
+    desiredNumOfBranches = 5
     count = 1
     while True:
         # Finds a possible y coordinate to place the branch on 
         newY = randint(-512, 0)
         okayPosition = True
         
-        # Checks if this would be too close to existing brances
+        # Checks if this would be too close to existing branches and snowflakes
         for item in branches:
             if abs(newY-item.y) <= gap:
+                okayPosition = False
+        
+        # could take this out
+        for item in flakes:
+            if abs(newY-item.y) <= gap and side == item.type:
                 okayPosition = False
                 
         # If an appropriate y value is found, exit loop
@@ -287,7 +292,7 @@ def add_flakes():
     
     side = randint(0,1) # Generates random side
     gap = 100 # Minumum gap between snowflakes
-    desiredNumOfFlakes = 6
+    desiredNumOfFlakes = 4
     count = 1
     while True:
         newY = randint(-512, 0) # Finds possible y coordinate for snowflake
@@ -337,8 +342,8 @@ branches = []
 
 # Create initial snowflakes
 flakes = []
-flakes.append(Snowflake(50, "right"))
-flakes.append(Snowflake(340, "left"))
+#flakes.append(Snowflake(50, "right"))
+#flakes.append(Snowflake(340, "left"))
 
 # Create tree (default background)
 tree = []
