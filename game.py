@@ -22,7 +22,7 @@ game_state = 2  # Game starts showing menu
 
 # Set display
 background = GameImage('sprite/scenario/scenarionew.png')
-menu_bg = GameImage('sprite/scenario/newbkg.png')
+menu_bg = GameImage('sprite/scenario/start1.png')
 game_over = GameImage('sprite/scenario/GameOver1.png')
 button = GameImage('sprite/scenario/button1.png', 0, -140)
 
@@ -422,7 +422,7 @@ while True:
         # Menu screen
         
         background.draw()
-        if counter < 400:
+        if counter < 500:
             # Initially display instructions for some time
             menu_bg.draw()
             window.draw_text(str(score_manager.get_records()), 512 - 260, 320, color=(255,255,255), font_file='font.TTF', size=20)
