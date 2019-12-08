@@ -365,7 +365,6 @@ while True:
     if e.type == pygame.QUIT:
         break
 
-
     elif game_state == 1:
         # Game in progress
         pygame.mixer.music.unpause() # Keep background music playing
@@ -373,7 +372,7 @@ while True:
         # Pressing left and right changes snowman position
         if pygame.key.get_pressed()[pygame.K_LEFT]:
             snowman.pos = "left"
-
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
         elif pygame.key.get_pressed()[pygame.K_RIGHT]:
                 snowman.pos = "right"
                 
