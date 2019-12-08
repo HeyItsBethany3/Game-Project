@@ -17,7 +17,7 @@ class Scorer:
     # When a snowflake is collected, points and health increase
     def snowflake_calc(self):
         self.points += 3
-        self.health += 8 # 5
+        self.health += 5 
         self.life_loss_rate += 0.5 ** self.life_loss_rate 
         
         # Health cannot be greater than 100

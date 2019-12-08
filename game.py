@@ -45,6 +45,7 @@ treeHeight = GameImage('sprite/branches/middle.png').get_height()
 snowmanDist = 45   # Changes distance from tree
 snowmanY = sHeight - 80  # Distance from bottom of screen
 flakeDist = 50 # Flake distance from tree
+snowmanH = 64 # Height of snowman
 
 # Speed of branches and snowflakes
 startSpeed = 6
@@ -56,7 +57,6 @@ pygame.mixer.music.play(-1)
 
 # Stores sound effect of gameover
 gameEnd = pygame.mixer.Sound("sound_effects/sound2.wav")
-
 
 # --------------- Additional classes ------------------------------- 
 
@@ -103,12 +103,11 @@ class Branches:
         # Finds new y value (which defines top of branch)
         newY = self.y + self.changeY
         
-        # lower bound for branch y value (y coordinate for bottom of branch)
-        lowerBound = newY + branchHeight
-        upperBound = newY - branchHeight
-        
-        # CHANGE
-        if  upperBound < snowmanY < lowerBound and snowmanPos == self.pos:
+        lowerBound = newY + branchHeight # y coordinate for bottom of branch
+        bottomOfSnowman = snowmanY + snowmanH # y value for bottom of snowman
+         
+        if lowerBound > snowmanY and newY < bottomOfSnowman \
+        and snowmanPos == self.pos:
             # New branch would be in snowmans space (snowman hits branch)
                 game_state = 0 # Game over
                 gameEnd.play() # Play sound effect
@@ -182,14 +181,13 @@ class Snowflake:
     # Moves snowflake
     def move(self, snowmanPos):
         
-        # CHANGE THIS
         newY = self.y + self.changeY
-        # lower bound for branch y value
-        lowerBound = newY + branchHeight 
-        upperBound = newY - branchHeight
+        lowerBound = newY + branchHeight # y coordinate for bottom of flake
+        bottomOfSnowman = snowmanY + snowmanH # y value for bottom of snowman
         
         # New flake would be in snowmans space
-        if upperBound < snowmanY < lowerBound  and snowmanPos == self.pos:
+        if lowerBound > snowmanY and newY < bottomOfSnowman \
+        and snowmanPos == self.pos:
             # Gain points and health by catching snowflakes
             scorer.snowflake_calc() 
             # This allows us to delete snowflake later
