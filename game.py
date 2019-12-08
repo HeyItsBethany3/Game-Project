@@ -301,7 +301,7 @@ def add_flakes():
 # Main code
 
 # Initialise pygame and draw screen
-#pygame.mixer.pre_init(44100,16,2,4096)
+pygame.mixer.pre_init(44100,16,2,4096)
 pygame.init()
 screen = pygame.display.set_mode((sWidth, sHeight))
 
@@ -351,7 +351,8 @@ while True:
 
     elif game_state == 1:
         # Game in progress
-        
+        pygame.mixer.music.unpause()#keep gb music playing
+
         if pygame.key.get_pressed()[pygame.K_LEFT]:
             snowman.pos = "left"
 
@@ -427,7 +428,8 @@ while True:
 # Game over
     elif game_state == 0:
         #stops bg music
-        pygame.mixer.music.stop()
+        #pygame.mixer.music.stop()
+        pygame.mixer.music.pause()
         # Calculate high score
         if not record_checked:
             if scorer.get_points() > score_manager.get_records():
@@ -455,7 +457,9 @@ while True:
             #start game again
             game_state = 1
             counter = 1 # time starts now
-
+            #pygame.mixer.music.play(-1)
+            #pygame.mixer.music.load('sound_effects/music.mp3')
+            #pygame.mixer.music.play(-1)
             # Re-initialise objects
             snowman = Snowman("right")
 
