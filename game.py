@@ -47,6 +47,14 @@ radFlake = 10 # Snowflake radius
 
 #flakeHeight = 150
 
+#play background music
+pygame.mixer.music.load('sound_effects/music.mp3')
+pygame.mixer.music.play(-1)
+
+#sound effect of gameover
+gameEnd = pygame.mixer.Sound("sound_effects/sound2.wav")
+
+
 
 class Branches:
 
@@ -93,8 +101,8 @@ class Branches:
         if  upperBound < snowmanY < lowerBound  and snowmanPos == self.pos:
             # New branch would be in snowmans space
                 game_state = 0 #game over
-
-            
+                gameEnd.play()
+                
 
         elif (newY > sHeight):
             # Branch starts at top of screen again
@@ -293,6 +301,7 @@ def add_flakes():
 # Main code
 
 # Initialise pygame and draw screen
+#pygame.mixer.pre_init(44100,16,2,4096)
 pygame.init()
 screen = pygame.display.set_mode((sWidth, sHeight))
 
@@ -342,7 +351,7 @@ while True:
 
     elif game_state == 1:
         # Game in progress
-
+        
         if pygame.key.get_pressed()[pygame.K_LEFT]:
             snowman.pos = "left"
 
@@ -355,7 +364,7 @@ while True:
 
         # Update background
         paintEverything()
-
+        scorer.update()
 
         # Branches and snowflakes move faster over time
         startSpeed = 6
@@ -381,23 +390,24 @@ while True:
         if counter%50 == 0:
             # Gain points over time
             scorer.add_points()
-        if counter % 10 == 0:
+        #
+        # if counter % 10 == 0:
             # Lose health over time
-            scorer.update(counter)
+            #scorer.update()
 
         if not scorer.snowie_alive():
             game_state = 0 # Game over
-        
+            gameEnd.play() #plays sound effect
         counter += 1
 
         # Shows any changes made
         pygame.display.flip()
-
+        window.update()
 
     elif game_state == 2:
         # Menu screen
         background.draw()
-        if counter < 250:
+        if counter < 600:
             menu_bg.draw()
             window.draw_text(str(score_manager.get_records()), 512 - 260, 320, color=(255,255,255), font_file='font.TTF', size=20)
         else:
@@ -414,10 +424,10 @@ while True:
             # Initial graphics
             paintEverything()
         
-
+# Game over
     elif game_state == 0:
-        # Game over
-
+        #stops bg music
+        pygame.mixer.music.stop()
         # Calculate high score
         if not record_checked:
             if scorer.get_points() > score_manager.get_records():
@@ -470,7 +480,7 @@ while True:
         pygame.display.flip()
 
 
-
+#print(window.curr_time)
 
 pygame.quit()  # Stops program
 os._exit(0)  # Stops program for mac OS users

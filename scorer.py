@@ -2,31 +2,28 @@ import pygame
 
 
 class Scorer:
-    
-    health = 100
-    points = 0
-    multiplier = 1
-    #life_loss_rate = 3.3#3.3
+      
         
     def __init__(self, window):
         self.window = window
-        
+        self.health = 100
+        self.points = 0
+        self.life_loss_rate = 2
+
     def add_points(self):
         self.points += 1
 
 
     def snowflake_calc(self):
         self.points += 3
-        self.health += 5 
-        #self.life_loss_rate += 0.4 ** self.life_loss_rate 
+        self.health += 5
+        self.life_loss_rate += 0.5 ** self.life_loss_rate 
         
         if self.health > 100:
             self.health = 100
 
-    def update(self, x):
-        self.x = x
-        self.health -= 1
-        #self.health -= self.life_loss_rate * x/360
+    def update(self):
+        self.health -= self.life_loss_rate * self.window.delta_time()
 
     def snowie_alive(self):
         return self.health > 0 
