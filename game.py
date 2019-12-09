@@ -244,22 +244,27 @@ def add_branches():
     
     side = randint(0,1) # Generates random side of tree (left or right)
     gap = 200 # Minimum gap between branches
-    desiredNumOfBranches = 5
+    desiredNumOfBranches = 4
     count = 1
     while True:
         # Finds a possible y coordinate to place the branch on 
         newY = randint(-512, 0)
         okayPosition = True
         
-        # Checks if this would be too close to existing branches and snowflakes
+        # Checks if this would be too close to existing branches s
         for item in branches:
             if abs(newY-item.y) <= gap:
                 okayPosition = False
         
-        # could take this out
+        # Checks if newY is too close to existing snowflakes 
+        """
         for item in flakes:
             if abs(newY-item.y) <= gap and side == item.type:
                 okayPosition = False
+        """
+        """ This is commented because the game is not challenging enough if 
+        snowflakes are never created close to branches.
+        """
                 
         # If an appropriate y value is found, exit loop
         if okayPosition:
