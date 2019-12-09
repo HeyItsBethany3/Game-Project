@@ -14,7 +14,7 @@ class Sound():
         self.set_volume(self.volume)
 
         # To reduce audio delay
-        pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=512)
+        #pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=512)
 
     def load(self, sound_file):
         if(pygame.mixer):

@@ -51,12 +51,7 @@ snowmanH = 64 # Height of snowman
 startSpeed = 6
 maxSpeed = 12
 
-# Plays background music
-pygame.mixer.music.load('sound_effects/music.mp3')
-pygame.mixer.music.play(-1)
 
-# Stores sound effect of gameover
-gameEnd = pygame.mixer.Sound("sound_effects/sound2.wav")
 
 # --------------- Additional classes ------------------------------- 
 
@@ -332,6 +327,13 @@ def add_flakes():
 pygame.mixer.pre_init(44100,16,2,4096)
 pygame.init()
 screen = pygame.display.set_mode((sWidth, sHeight))
+
+# Plays background music
+pygame.mixer.music.load('sound_effects/music.mp3')
+pygame.mixer.music.play(-1)
+
+# Stores sound effect of gameover
+gameEnd = pygame.mixer.Sound("sound_effects/sound2.wav")
 
 
 # Initialise snowman
