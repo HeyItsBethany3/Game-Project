@@ -346,6 +346,8 @@ branches = []
 
 # Create initial snowflakes
 flakes = []
+flakes.append(Snowflake(50, "right"))
+flakes.append(Snowflake(340, "left"))
 
 # Create tree (default background)
 tree = []
