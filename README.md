@@ -1,5 +1,5 @@
 To get the game to run simply run the file game.py in your favourite IDE or use command "python game.py" while in the file directroy from command prompt/terminal.
-for details on what each file does check the DESCRIPTION file. 
+For details on what each file does check the DESCRIPTION file. 
 
 HOW THE GAME WORKS
 
