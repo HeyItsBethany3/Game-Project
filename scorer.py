@@ -14,7 +14,7 @@ class Scorer:
     def add_points(self):
         self.points += 1
 
-    # When a snowflake is collected, points and health increase
+    # When a snowflake is collected, points, health increase and life loss rate increase to make it more difficult
     def snowflake_calc(self):
         self.points += 3
         self.health += 5 

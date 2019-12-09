@@ -30,7 +30,7 @@ button = GameImage('sprite/scenario/button1.png', 0, -140)
 sWidth = 512 # screen width
 sHeight = 512 # screen height
 window = Window(sWidth, sHeight)
-window.set_title('Snowman')
+window.set_title('Snowie Game')
 
 # Managing points and health  
 score_manager = ScoreManager() # Stores high score and last score
@@ -387,7 +387,8 @@ while True:
         # Update background and graphics
         paintEverything()
         # Lose health over time
-        scorer.update() 
+        if counter > 50:
+           scorer.update() 
 
         # Branches and snowflakes move at different speeds over time
         speedChange = 300
