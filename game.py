@@ -51,8 +51,6 @@ snowmanH = 64 # Height of snowman
 startSpeed = 6
 maxSpeed = 12
 
-
-
 # --------------- Additional classes ------------------------------- 
 
 class Branches:
@@ -323,18 +321,17 @@ def add_flakes():
 # --------------- Main code -------------------------------
 
 
-# Initialise pygame and draw screen
-pygame.mixer.pre_init(44100,16,2,4096)
+# Initialise pygame and load screen
 pygame.init()
+pygame.mixer.pre_init(44100,16,2,4096)
 screen = pygame.display.set_mode((sWidth, sHeight))
 
 # Plays background music
-pygame.mixer.music.load('sound_effects/music.mp3')
+pygame.mixer.music.load('sound_effects/music.ogg')
 pygame.mixer.music.play(-1)
 
 # Stores sound effect of gameover
 gameEnd = pygame.mixer.Sound("sound_effects/sound2.wav")
-
 
 # Initialise snowman
 snowman = Snowman("right")
@@ -344,8 +341,6 @@ branches = []
 
 # Create initial snowflakes
 flakes = []
-#flakes.append(Snowflake(50, "right"))
-#flakes.append(Snowflake(340, "left"))
 
 # Create tree (default background)
 tree = []
@@ -450,8 +445,7 @@ while True:
     elif game_state == 0:
         # Game over
         
-        #stops bg music
-        #pygame.mixer.music.stop()
+        # Pauses background music 
         pygame.mixer.music.pause()
         
         # Calculate high score
@@ -476,14 +470,10 @@ while True:
         window.draw_text(str(scorer.get_points()), 260, 240, color=(20, 200, 50), font_file='font.TTF',
                          size=30) # Last score
 
-        # Press enter to start gane again
+        # Press enter to start game again
         if pygame.key.get_pressed()[pygame.K_RETURN]:
             game_state = 1
             counter = 1 # Time resets
-            
-            #pygame.mixer.music.play(-1)
-            #pygame.mixer.music.load('sound_effects/music.mp3')
-            #pygame.mixer.music.play(-1)
             
             # Re-initialise objects
             snowman = Snowman("right")
